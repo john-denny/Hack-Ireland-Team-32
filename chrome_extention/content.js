@@ -1,73 +1,3 @@
-// chrome.storage.local.get(["dobMonth", "dobYear", "dobDay", "dobCategory"], function (data) {
-//         if (!data.dobMonth || !data.dobYear || !data.dobDay) {
-//             console.log("DOB information is incomplete in storage.");
-//             return;
-//         }
-
-//         function autoFillInputById(elementId, value) {
-//             const textBox = document.getElementById(elementId);
-
-//             if (textBox) {
-//                 textBox.value = value;
-//                 textBox.dispatchEvent(new Event("input", { bubbles: true })); 
-//                 textBox.dispatchEvent(new Event("change", { bubbles: true }));
-//                 console.log(`Input with ID ${elementId} filled automatically with`, value);
-//             } else {
-//                 console.warn(`Input with ID ${elementId} not found!`);
-//             }
-//         }
-
-//         function autoFillDropDowns(){
-//             const categories = ["Health", "Remote Working", "Rental", "Stay and Spend", "Trade", "Other"];
-//             const categorySelect = document.getElementById("categorySelect");
-
-//             categories.forEach((category, index) => {
-//                 let option = document.createElement("option");
-//                 option.value = index;
-//                 option.textContent = category;
-//                 categorySelect.appendChild(option);
-//             });
-
-//             categorySelect.value = categories.indexOf(data.dobCategory);
-//         }
-
-//         function autoFillSubCategory() {
-//             const subCategorySelect = document.getElementById("subCategorySelect");
-
-//             // Clear existing options
-//             subCategorySelect.innerHTML = '';
-
-//             // Add the required options
-//             const options = [
-//             { value: "", text: "" },
-//             { value: "0", text: "General" },
-//             { value: "1", text: "Dental (non-routine)" },
-//             { value: "2", text: "Nursing home" }
-//             ];
-
-//             options.forEach(optionData => {
-//             let option = document.createElement("option");
-//             option.value = optionData.value;
-//             option.textContent = optionData.text;
-//             subCategorySelect.appendChild(option);
-//             });
-
-//             // Set the value to "General"
-//             subCategorySelect.value = "0";
-//             subCategorySelect.disabled = false;
-//         }
-
-
-
-//         autoFillInputById("dob-month-input", data.dobMonth);
-//         autoFillInputById("dob-year-input", data.dobYear);
-//         autoFillInputById("dob-day-input", data.dobDay);
-
-//         autoFillDropDowns();
-//         autoFillSubCategory();
-
-// });
-
 chrome.storage.local.get(["dobMonth", "dobYear", "dobDay", "dobCategory", "savedFile"], function (data) {
     if (!data.dobMonth || !data.dobYear || !data.dobDay) {
         console.log("DOB information is incomplete in storage.");
@@ -135,26 +65,81 @@ chrome.storage.local.get(["dobMonth", "dobYear", "dobDay", "dobCategory", "saved
         triggerAllEvents(subCategorySelect);
     }
 
-    function waitForDynamicContent(selector, callback, timeout = 5000) {
+    async function safeAutoFillAmount() {
+        const amountInput = document.getElementById("amount");
+        console.log(getEventListeners(amountInput));
+    
+        if (amountInput) {
+            const value = "1"; // Correct amount
+    
+            // Temporarily disable inline `oninput` and other event listeners
+            const originalOnInput = amountInput.getAttribute("oninput");
+            amountInput.removeAttribute("oninput");
+    
+            // Backup existing event listeners (if any)
+            const oldEventListeners = {
+                input: amountInput.oninput,
+                change: amountInput.onchange,
+                blur: amountInput.onblur,
+            };
+    
+            // Remove all handlers temporarily
+            amountInput.oninput = null;
+            amountInput.onchange = null;
+            amountInput.onblur = null;
+    
+            // Directly set the value
+            amountInput.focus();
+            amountInput.value = value;
+    
+            // Trigger all required events manually
+            amountInput.dispatchEvent(new Event("input", { bubbles: true }));
+            amountInput.dispatchEvent(new Event("change", { bubbles: true }));
+            amountInput.dispatchEvent(new Event("blur", { bubbles: true }));
+            amountInput.dispatchEvent(new Event("focusout", { bubbles: true }));
+    
+            // Restore original event handlers after a slight delay
+            setTimeout(() => {
+                if (originalOnInput) {
+                    amountInput.setAttribute("oninput", originalOnInput);
+                }
+    
+                // Restore other event listeners
+                amountInput.oninput = oldEventListeners.input;
+                amountInput.onchange = oldEventListeners.change;
+                amountInput.onblur = oldEventListeners.blur;
+    
+                console.log(`Input with ID 'amount' successfully filled with '${value}'.`);
+            }, 500);
+        } else {
+            console.warn("Amount input field not found!");
+        }
+    }
+    // Run the function safely
+    
+    function waitForDynamicContent(selector, timeout = 5000, intervalTime = 200) {
         const startTime = Date.now();
-
+    
         const interval = setInterval(() => {
             const element = document.querySelector(selector);
-            if (element && element.offsetParent !== null) { // Check if element is visible
-                clearInterval(interval);
-                callback(element);
+    
+            // Check if element exists and is visible
+            if (element && element.offsetParent !== null) {
+                clearInterval(interval); // Stop checking
+                console.log(`Element '${selector}' is now visible.`);
             }
-
+    
+            // Stop checking after the timeout
             if (Date.now() - startTime > timeout) {
                 clearInterval(interval);
-                console.warn("Dynamic content did not load in time.");
+                console.warn(`Element '${selector}' did not appear within the timeout period.`);
             }
-        }, 200); // Check every 200ms
+        }, intervalTime);
     }
+    
+    
 
-
-
-    // Auto-fill form fields
+    // Auto-fill form field
     autoFillInputById("dob-day-input", data.dobDay);
     autoFillInputById("dob-month-input", data.dobMonth);
     autoFillInputById("dob-year-input", data.dobYear);
@@ -163,20 +148,9 @@ chrome.storage.local.get(["dobMonth", "dobYear", "dobDay", "dobCategory", "saved
     autoFillSubCategory();
 
     // Wait for the dynamic content (file upload field) to appear
-    waitForDynamicContent("#uploadContent1", autoUploadFile);
+    waitForDynamicContent("#uploadContent1");    
+    safeAutoFillAmount();
+    // Run the function to simulate typing
 
-    function autoFillAmount() {
-        const amountInput = document.querySelector("#amount-div .input-group input");
-
-        if (amountInput) {
-            amountInput.value = "100";
-            triggerAllEvents(amountInput);
-            console.log(`Input with ID amount filled automatically with 100`);
-        } else {
-            console.warn(`Input with ID amount not found!`);
-        }
-    }
-
-    autoFillAmount();
 
 });
