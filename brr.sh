@@ -2,8 +2,5 @@
 
 while true 
 do
-  touch c 
-  git add .
-  git commit -m "C"
+  date +%N > c && git add . && git commit -m "C"
 done
-git push
