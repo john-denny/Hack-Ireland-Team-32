@@ -1,12 +1,22 @@
-
 import base64
-import requests
-import json
+import socketio
+import time
+
+# Create a SocketIO client
+sio = socketio.Client()
 
 # Function to convert an image file to base64
 def image_to_base64(image_path):
     with open(image_path, "rb") as image_file:
         return base64.b64encode(image_file.read()).decode('utf-8')
+
+# Event handler for receiving OCR results
+@sio.event
+def ocr_result(data):
+    print("Received OCR result:", data)
+
+# Connect to the Flask-SocketIO server
+sio.connect('http://127.0.0.1:5000')
 
 # Path to the image you want to upload
 image_path = 'example receipt from angry woman on X.jpeg'  # Update this path
@@ -19,10 +29,8 @@ data = {
     'file': base64_image
 }
 
-# Send the data to the Flask-SocketIO server
-# Note: Replace 'http://localhost:5000' with your server's URL if different
-url = 'http://localhost:5000/upload_file'
-response = requests.post(url, json=data)
+# Emit the upload_file event with the base64 image
+sio.emit('upload_file', data)
 
-# Print the response from the server
-print('Response:', response)
+# Wait for a response (optional)
+sio.wait()
