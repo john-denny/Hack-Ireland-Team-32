@@ -14,9 +14,9 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 document.getElementById("submitBtn").addEventListener("click", function () {
-    let month = "12"; 
-    let day = "12"; 
-    let year = "2022"; 
+    let month = "07"; 
+    let day = "23"; 
+    let year = "2024"; 
     let category = "Health";
 
 
