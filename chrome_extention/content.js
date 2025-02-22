@@ -155,9 +155,9 @@ chrome.storage.local.get(["dobMonth", "dobYear", "dobDay", "dobCategory", "saved
 
 
     // Auto-fill form fields
+    autoFillInputById("dob-day-input", data.dobDay);
     autoFillInputById("dob-month-input", data.dobMonth);
     autoFillInputById("dob-year-input", data.dobYear);
-    autoFillInputById("dob-day-input", data.dobDay);
 
     autoFillDropDowns();
     autoFillSubCategory();
@@ -166,7 +166,7 @@ chrome.storage.local.get(["dobMonth", "dobYear", "dobDay", "dobCategory", "saved
     waitForDynamicContent("#uploadContent1", autoUploadFile);
 
     function autoFillAmount() {
-        const amountInput = document.getElementById("amount");
+        const amountInput = document.querySelector("#amount-div .input-group input");
 
         if (amountInput) {
             amountInput.value = "100";
