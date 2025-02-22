@@ -2,14 +2,13 @@ from flask import Flask, request, jsonify, send_file
 from flask_socketio import SocketIO
 import pytesseract
 from PIL import Image
+
 import io
-import cv2
 import re
 import os
 import base64
 import sqlite3
 import time
-import zipfile
 
 app = Flask(__name__)
 socketio = SocketIO(app)
