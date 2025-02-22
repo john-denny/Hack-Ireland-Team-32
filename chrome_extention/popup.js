@@ -1,4 +1,5 @@
-document.getElementById("submitBtn").addEventListener("click", function () {
+// pushing data to local storage and runnibg content.js when user clicks submit button
+document.getElementById("submitBtn").addEventListener("click", function () { 
     let month = "12"; 
 
     chrome.storage.local.set({ dobMonth: month }, function () {

@@ -1,3 +1,4 @@
+//reading data from local storage
 chrome.storage.local.get("dobMonth", function (data) {
     if (!data.dobMonth) {
         console.log("No DOB month found in storage.");
@@ -6,6 +7,7 @@ chrome.storage.local.get("dobMonth", function (data) {
 
     let storedMonth = data.dobMonth;
 
+    //filling data into the form
     function autoFillDOBMonth(month) {
         const textBox = document.getElementById("dob-month-input");
 
@@ -19,5 +21,6 @@ chrome.storage.local.get("dobMonth", function (data) {
         }
     }
 
+    //calling the function to fill the data
     autoFillDOBMonth(storedMonth);
 });
