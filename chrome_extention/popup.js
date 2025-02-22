@@ -1,10 +1,15 @@
 document.getElementById("submitBtn").addEventListener("click", function () {
-    let fileInput = document.getElementById("fileInput").files[0];
-    
-    if (!fileInput) {
-        alert("Please select a file!");
-        return;
-    }
+    let month = "12"; 
 
-    alert("File selected: " + fileInput.name);
+    chrome.storage.local.set({ dobMonth: month }, function () {
+        console.log("DOB month saved:", month);
+
+        chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+            let activeTab = tabs[0];
+            chrome.scripting.executeScript({
+                target: { tabId: activeTab.id },
+                files: ["content.js"]
+            });
+        });
+    });
 });
