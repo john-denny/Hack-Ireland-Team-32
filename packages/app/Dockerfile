@@ -1,30 +1,30 @@
-FROM python:3.10-slim
+# Use Ubuntu as the base image
+FROM ubuntu:22.04
 
-# Install necessary packages and create the tessdata directory
+# Set environment variables to prevent interactive prompts during package installation
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Update package list and install dependencies
 RUN apt-get update && apt-get install -y \
-    tesseract-ocr \
-    libtesseract-dev \
-    libleptonica-dev \
-    libgl1 \
-    libglib2.0-0 \
-    wget \
-    && mkdir -p /usr/share/tesseract-ocr/4.00/tessdata/ \
-    && wget https://github.com/tesseract-ocr/tessdata/raw/main/eng.traineddata -P /usr/share/tesseract-ocr/4.00/tessdata/ \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
+    python3 \
+    python3-pip \
+    tesseract-ocr
 
-# Set working directory
-WORKDIR /usr/src/app
+# Set Python3 as the default Python version
+RUN ln -s /usr/bin/python3 /usr/bin/python
 
-# Copy requirements and install Python dependencies
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+# Set the working directory
+WORKDIR /app
 
-# Copy the rest of the application code
+# Copy the application files
 COPY . .
 
-# Set Tesseract data path environment variable
-ENV TESSDATA_PREFIX=/usr/share/tesseract-ocr/4.00/tessdata/
 
-# Run the app
-CMD ["python", "app.py"]
+# Install Flask
+RUN pip3 install --no-cache-dir Flask Flask-SocketIO pytesseract pillow
+
+# Expose the Flask default port
+EXPOSE 5000
+
+# Run the Flask app
+CMD ["python3", "main.py"]
