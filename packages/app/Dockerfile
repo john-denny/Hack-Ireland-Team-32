@@ -24,7 +24,7 @@ COPY . .
 RUN pip3 install --no-cache-dir Flask  pytesseract pillow 
 
 # Expose the Flask default port
-EXPOSE 5000
+EXPOSE 80
 
 # Run the Flask app
 CMD ["python3", "main.py"]
