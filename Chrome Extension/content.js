@@ -129,7 +129,7 @@ async function waitForOptions(selectElement, timeout = 5000) {
     }
 }
 
-// Функція для очищення бази даних
+/* Функція для очищення бази даних
 async function clearDatabase() {
     try {
         let response = await fetch("https://server.johndenny.dev/clear_database", {
@@ -143,11 +143,11 @@ async function clearDatabase() {
     } catch (error) {
         console.error('Error clearing database:', error);
     }
-}
+}*/
 
 // Функція для завантаження зображення на сервер
 async function uploadImage(file) {
-    clearDatabase();
+    // clearDatabase();
     const formData = new FormData();
     formData.append('file', file);
     console.log(file.target.result);
@@ -282,7 +282,7 @@ async function autoFillForm() {
         await new Promise(resolve => setTimeout(resolve, 1000));
     }
 
-    await clearDatabase();
+    // await clearDatabase();
 }
 
 ///////////////////////////////
