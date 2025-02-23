@@ -41,29 +41,38 @@ def downscale_image(image):
         image = image.resize(new_size, Image.ANTIALIAS)
     return image
 
-@socketio.on('upload_file')
-def handle_file_upload(data):
-    file = data['file']  # Assuming the file is sent as base64
-    file = base64.b64decode(file)
-    image = Image.open(io.BytesIO(file))
-    image = downscale_image(image)  # Downscale if necessary
+@app.route('/upload_file', methods=['POST'])
+def handle_file_upload():
+    data = request.json  # Expecting JSON data
+    if not data or 'file' not in data:
+        return jsonify({'error': 'No file provided'}), 400
 
-    # Save the image to the uploads directory
-    image_name = f"receipt_{int(time.time())}.png"  # Unique name based on timestamp
-    image_path = os.path.join(UPLOAD_FOLDER, image_name)
-    image.save(image_path)
+    try:
+        # Decode the base64 file
+        file_data = base64.b64decode(data['file'])
+        image = Image.open(io.BytesIO(file_data))
+        image = downscale_image(image)  # Downscale if necessary
 
-    # Perform OCR
-    ocr_result = pytesseract.image_to_string(image)
+        # Save the image to the uploads directory
+        image_name = f"receipt_{int(time.time())}.png"  # Unique name based on timestamp
+        image_path = os.path.join(UPLOAD_FOLDER, image_name)
+        image.save(image_path)
 
-    # Extract data using regex
-    extracted_data = extract_data(ocr_result)
+        # Perform OCR
+        ocr_result = pytesseract.image_to_string(image)
 
-    # Insert data into the database
-    insert_receipt(extracted_data['dates'], extracted_data['prices'], image_path)
+        # Extract data using regex
+        extracted_data = extract_data(ocr_result)
 
-    # Send back the extracted data
-    socketio.emit('ocr_result', extracted_data)
+        # Insert data into the database
+        insert_receipt(extracted_data['dates'], extracted_data['prices'], image_path)
+
+        # Send back the extracted data as JSON response
+        return jsonify(extracted_data), 200
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 
 def extract_data(extracted_text):
     # Extract dates
