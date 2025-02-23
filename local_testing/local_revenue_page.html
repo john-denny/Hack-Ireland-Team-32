@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Revenue.ie Test Page</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 600px; margin: 50px auto; }
+        label, input, button { display: block; margin-bottom: 10px; }
+        input[type="text"], select, input[type="file"] { width: 100%; padding: 5px; }
+        button { padding: 5px; background-color: #007bff; color: #fff; border: none; cursor: pointer; }
+        button:hover { background-color: #0056b3; }
+    </style>
+</head>
+<body>
+    <h2>Revenue.ie Test Form</h2>
+    <form id="inputRecipetDetailsForm" name="inputRecipetDetailsForm" action="/myreceipts-web/ros/receipt/store/ADD" method="post" enctype="multipart/form-data" accept-charset="UTF-8" autocomplete="off" novalidate="novalidate">
+        <label for="dob-day-input">Day:</label>
+        <input type="text" id="dob-day-input" maxlength="2" required>
+        
+        <label for="dob-month-input">Month:</label>
+        <input type="text" id="dob-month-input" maxlength="2" required>
+        
+        <label for="dob-year-input">Year:</label>
+        <input type="text" id="dob-year-input" maxlength="4" required>
+        
+        <label for="amount">Amount (€):</label>
+        <input type="text" id="amount" required>
+        
+        <label for="categorySelect">Category:</label>
+        <select id="categorySelect" required>
+            <option value="">Select Category</option>
+            <option value="0">Health</option>
+            <option value="6">Remote Working</option>
+            <option value="1">Rental</option>
+            <option value="5">Stay and Spend</option>
+            <option value="2">Trade</option>
+            <option value="3">Other</option>
+        </select>
+        
+        <label for="subCategorySelect">Subcategory:</label>
+        <select id="subCategorySelect" required>
+            <option value="">Select Subcategory</option>
+            <option value="0">General</option>
+            <option value="1">Dental (non-routine)</option>
+            <option value="2">Nursing home</option>
+        </select>
+        
+        <label for="uploadContent1">Upload Receipt:</label>
+        <input type="file" id="uploadContent1" accept="image/*">
+        
+        <button type="submit" id="submitButton">Submit</button>
+    </form>
+
+    <!-- <script>
+        document.getElementById("receiptForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+            alert("Form submitted!");
+            setTimeout(() => { location.reload(); }, 2000); // Імітація оновлення сторінки
+        });
+    </script> -->
+</body>
+</html>
