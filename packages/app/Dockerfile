@@ -21,7 +21,7 @@ COPY . .
 
 
 # Install Flask
-RUN pip3 install --no-cache-dir Flask  pytesseract pillow 
+RUN pip3 install --no-cache-dir Flask  pytesseract pillow flask-cors opencv-python-headless
 
 # Expose the Flask default port
 EXPOSE 80
