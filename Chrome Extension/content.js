@@ -150,7 +150,7 @@ async function uploadImage(file) {
     // clearDatabase();
     const formData = new FormData();
     formData.append('file', file);
-    console.log(file.target.result);
+    // console.log(file.target.result);
     try {
         let response = await fetch('https://server.johndenny.dev/upload_file', {
             method: 'POST',
