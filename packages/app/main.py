@@ -40,14 +40,12 @@ def downscale_image(image):
 
 @app.route('/upload_file', methods=['POST'])
 def handle_file_upload():
-    data = request.json  # Expecting JSON data
-    if not data or 'file' not in data:
+    if 'file' not in request.files:
         return jsonify({'error': 'No file provided'}), 400
 
     try:
-        # Decode the base64 file
-        file_data = base64.b64decode(data['file'])
-        image = Image.open(io.BytesIO(file_data))
+        file = request.files['file']
+        image = Image.open(file.stream)
         image = downscale_image(image)  # Downscale if necessary
 
         # Save the image to the uploads directory
