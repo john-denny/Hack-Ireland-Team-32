@@ -1,14 +1,20 @@
 {
-    "manifest_version": 3,
-    "name": "Receipt AutoFill",
-    "version": "1.0",
-    "permissions": ["storage", "tabs", "scripting"],
-    "host_permissions": ["https://www.ros.ie/*"],
-    "background": {
-      "service_worker": "background.js"
-    },
-    "action": {
-      "default_popup": "popup.html"
-    }
+  "manifest_version": 3,
+  "name": "Receipt AutoFill",
+  "version": "1.0",
+  "permissions": [
+    "storage",
+    "tabs",
+    "scripting"
+  ],
+  "host_permissions": [
+    "https://www.ros.ie/*",
+    "http://144.91.117.148:5000/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup.html"
   }
-  
+}

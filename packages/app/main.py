@@ -1,5 +1,4 @@
 from flask import Flask, request, jsonify, send_file
-from flask_socketio import SocketIO
 import pytesseract
 from PIL import Image
 
@@ -11,7 +10,6 @@ import sqlite3
 import time
 
 app = Flask(__name__)
-socketio = SocketIO(app)
 
 pytesseract.pytesseract.tesseract_cmd = r"/usr/bin/tesseract"
 
@@ -31,7 +29,6 @@ def init_db():
     conn.close()
 
 # Function to downscale image if larger than 2MB
-# TODO: redo compression 
 def downscale_image(image):
     max_size = 2 * 1024 * 1024  # 2MB
     
@@ -99,7 +96,6 @@ def insert_receipt(dates, prices, image_path):
     conn.commit()
     conn.close()
 
-# TODO: redo the download receipts json 
 @app.route('/download_receipts', methods=['GET'])
 def download_receipts():
     conn = sqlite3.connect('receipts.db')
@@ -117,4 +113,4 @@ def download_receipts():
 init_db()
 
 if __name__ == '__main__':
-    socketio.run(app, host="0.0.0.0", port=5000, debug=True, allow_unsafe_werkzeug=True)
+    app.run(host="0.0.0.0", port=5000, debug=True)

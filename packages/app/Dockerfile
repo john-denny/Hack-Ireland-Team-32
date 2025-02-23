@@ -21,7 +21,7 @@ COPY . .
 
 
 # Install Flask
-RUN pip3 install --no-cache-dir Flask Flask-SocketIO pytesseract pillow
+RUN pip3 install --no-cache-dir Flask  pytesseract pillow 
 
 # Expose the Flask default port
 EXPOSE 5000
