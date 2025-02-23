@@ -12,13 +12,35 @@ function createUIContainer() {
       right: "20px",
       width: "220px",
       padding: "15px",
-      background: "#fff",
+      background: "rgb(5,4,4)",
       border: "1px solid #ccc",
       borderRadius: "6px",
-      boxShadow: "0 2px 8px rgba(0,0,0,0.3)",
+      boxShadow: "0 2px 8px rgba(63,32,91,0.3)",
       zIndex: 999999,
       fontFamily: "Arial, sans-serif",
     });
+
+    // Додаємо кнопку сховати панель
+    const hideButton = document.createElement("button");
+    hideButton.style.width="25px";
+    hideButton.style.height="25px";
+    hideButton.style.background = "red";
+    hideButton.style.color = "#fff";
+    hideButton.style.border = "none";
+    hideButton.style.padding = "5px";
+    hideButton.style.cursor = "pointer";
+    hideButton.style.borderRadius = "50%";
+    hideButton.style.position = "absolute";
+    hideButton.style.top = "5px";
+    hideButton.style.right = "5px";
+    
+    hideButton.addEventListener("click", () => {
+        container.style.display = "none";
+        localStorage.setItem("extensionHidden", "true");
+    });
+
+    container.appendChild(hideButton);
+
   
     // Невеликий заголовок (за бажання)
     const title = document.createElement("h3");
@@ -26,6 +48,7 @@ function createUIContainer() {
     title.style.textAlign = "center";
     title.style.marginTop = "0";
     title.style.fontSize = "16px";
+    title.style.color = "#fff";
     container.appendChild(title);
   
     // Додатковий блок, щоб тримати кнопки разом (вертикально)
@@ -52,6 +75,19 @@ function createUIContainer() {
   let myUI = createUIContainer();
   let myContainer = myUI.container;       // Основна "панель"
   let myButtonWrapper = myUI.buttonWrapper; // Блок, куди додаватимемо кнопки
+
+  // Якщо панель була схована раніше – не показувати її після оновлення сторінки
+if (localStorage.getItem("extensionHidden") === "true") {
+    myContainer.style.display = "none";
+}
+
+// Слухаємо повідомлення від бекграунду екстеншена, щоб знову показати панель
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+    if (request.action === "showPanel") {
+        myContainer.style.display = "block";
+        localStorage.setItem("extensionHidden", "false");
+    }
+});
   
   ///////////////////////////////
   // 2. ТВОЇ ФУНКЦІЇ (логіка не змінена)
@@ -76,7 +112,7 @@ function createUIContainer() {
       // Стилі для label (робимо "кнопку")
       Object.assign(label.style, {
         display: "inline-block",
-        backgroundColor: "#007bff",
+        backgroundColor: "rgb(43,44,49)",
         color: "#fff",
         padding: "8px 12px",
         borderRadius: "4px",
@@ -84,13 +120,6 @@ function createUIContainer() {
         textTransform: "uppercase",
         fontSize: "12px",
         textAlign: "center"
-      });
-      // Hover
-      label.addEventListener("mouseover", () => {
-        label.style.backgroundColor = "#0056b3";
-      });
-      label.addEventListener("mouseout", () => {
-        label.style.backgroundColor = "#007bff";
       });
   
       // Обробка вибору файлів
@@ -224,6 +253,30 @@ function createUIContainer() {
           inputElement.value = isNaN(formattedValue) ? "" : formattedValue;
       }
   }
+
+  async function typeAmountWithKeyboard(inputElement, amountString) {
+    
+    for (let char of amountString) {
+      let event = new KeyboardEvent("keydown", {
+        bubbles: true,
+        cancelable: true,
+        key: char,
+        code: `Digit${char}`,
+        charCode: char.charCodeAt(0),
+        keyCode: char.charCodeAt(0),
+      });
+      
+      inputElement.dispatchEvent(event);
+      
+      inputElement.value += char;  // Вводимо символ у поле
+      inputElement.dispatchEvent(new Event("input", { bubbles: true }));
+      
+      await new Promise(resolve => setTimeout(resolve, 100)); // Затримка між натисканнями
+    }
+    
+    inputElement.dispatchEvent(new Event("change", { bubbles: true })); // Викликаємо подію зміни
+  }
+  
   
   // Функція для автоматичного заповнення форми
   async function autoFillForm() {
@@ -268,9 +321,11 @@ function createUIContainer() {
           subCategorySelect.value = receipt.subcategory;
           subCategorySelect.dispatchEvent(new Event("change", { bubbles: true }));
   
-          let amount = parseFloat(receipt.amount).toFixed(2);
-          await typeInputValue(amountInput, amount);
-          formatInputField("amount");
+          amountInput.focus();
+          await new Promise(resolve => setTimeout(resolve, 1000));
+          typeAmountWithKeyboard(amountInput, receipt.amount);
+          await new Promise(resolve => setTimeout(resolve, 1000));
+          amountInput.blur();
   
           console.log("Form filled. Uploading image...");
           await uploadImageToInput(receipt.image_url, "uploadContent1", receipt.id);
@@ -296,7 +351,7 @@ function createUIContainer() {
       // Стилі кнопки
       Object.assign(button.style, {
         display: "inline-block",
-        backgroundColor: "#28a745",
+        backgroundColor: "rgb(43,44,49)",
         color: "#fff",
         padding: "8px 12px",
         borderRadius: "4px",
@@ -305,14 +360,7 @@ function createUIContainer() {
         fontSize: "12px",
         textAlign: "center"
       });
-  
-      // Hover
-      button.addEventListener("mouseover", () => {
-        button.style.backgroundColor = "#218838";
-      });
-      button.addEventListener("mouseout", () => {
-        button.style.backgroundColor = "#28a745";
-      });
+
   
       // Додаємо кнопку в той же контейнер, де label
       myButtonWrapper.appendChild(button);

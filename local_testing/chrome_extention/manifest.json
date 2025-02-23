@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "Hack-Ireland-Team-32",
+  "name": "F - Revenue",
   "version": "1.0",
-  "description": "This is a chrome extension for Hack-Ireland-Team-32",
+  "description": "This is a chrome extension for make your life easier",
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
@@ -11,6 +11,18 @@
     }
   ],
   "permissions": [
-    "activeTab"
-  ]
+    "activeTab",
+    "storage"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_title": "Toggle Panel"
+  }
+  ,
+  "icons": {
+    "48": "./icon.png"
+  }
 }
+

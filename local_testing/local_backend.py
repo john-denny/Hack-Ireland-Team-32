@@ -36,7 +36,7 @@ async def upload_receipt(file: UploadFile = File(...)):
         copyfileobj(file.file, buffer);
 
     cursor.execute("INSERT INTO receipts (id, date, amount, category, subcategory, image_path) VALUES (?, ?, ?, ?, ?, ?)",
-                   (receipt_id, "2023-02-22", "100.00", "0", "0", file_path))
+                   (receipt_id, "2023-02-22", "100", "0", "0", file_path))
     conn.commit()
 
     return JSONResponse({"success": True, "message": "Receipt uploaded"})
