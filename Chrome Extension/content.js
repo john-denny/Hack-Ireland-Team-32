@@ -132,7 +132,7 @@ async function waitForOptions(selectElement, timeout = 5000) {
 // Функція для очищення бази даних
 async function clearDatabase() {
     try {
-        let response = await fetch("http://localhost:5000/clear_database", {
+        let response = await fetch("http://144.91.117.148:5000/clear_database", {
             method: 'DELETE',
         });
         if (!response.ok) {
@@ -152,7 +152,7 @@ async function uploadImage(file) {
     formData.append('file', file);
 
     try {
-        let response = await fetch('http://localhost:5000/upload_file', {
+        let response = await fetch('http://144.91.117.148:5000/upload_file', {
             method: 'POST',
             body: formData,
         });
@@ -172,7 +172,7 @@ async function uploadImage(file) {
 // Функція для отримання даних з сервера
 async function fetchReceipts() {
     try {
-        let response = await fetch("http://localhost:5000/download_receipts");
+        let response = await fetch("http://144.91.117.148:5000/download_receipts");
         if (!response.ok) {
             throw new Error(`HTTP error! Status: ${response.status}`);
         }
