@@ -1,9 +1,0 @@
-{
-  "manifest_version": 3,
-  "name": "Image Uploader",
-  "version": "1.0",
-  "permissions": ["activeTab", "storage", "fileSystem"],
-  "action": {
-    "default_popup": "popup.html"
-  }
-}
